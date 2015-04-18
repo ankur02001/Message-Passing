@@ -21,8 +21,7 @@ namespace ApplicationHelpers
   void title(const std::string& msg, char underline = '-');
 
   template<typename T>
-  std::string toString(T t)
-  {
+  std::string toString(T t){
     std::ostringstream out;
     out << t;
     return out.str();
@@ -32,13 +31,19 @@ namespace ApplicationHelpers
 
   extern const bool always;
 
-  class Verbose
-  {
+  class Verbose{
   public:
     Verbose(bool showState = true);
     void static show(const std::string& msg, bool always = false);
   private:
     static bool showState_;
+  };
+
+  struct Cosmetic{
+	  ~Cosmetic(){
+		  std::cout << "\n\n Cosmetic Enter to exit";
+		  std::cin.get();
+	  }
   };
 }
 

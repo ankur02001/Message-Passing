@@ -16,7 +16,7 @@ using namespace MessagePassing;
 //-------< Process the messsages of acknowledgement and End of File >------------------------------
 void ClientHandler::processMessage(Socket& socket_, Message& message)
 {
-	
+
 	std::string cmd = message.getHeader().getCommand();
 	Command cmd_val = Command::NONE;
 	if (cmd == "1" || cmd == "2" || cmd == "3" || cmd == "4" || cmd == "5" || cmd == "6")
@@ -40,7 +40,7 @@ void ClientHandler::processMessage(Socket& socket_, Message& message)
 		ack.getHeader().setDstIPAndPort(message.getHeader().getSrcIP(), message.getHeader().getSrcPort());
 		ack.getHeader().setFileNameAndType(message.getHeader().getFileName(), atoi(message.getHeader().getFileType().c_str()));
 		std::string MsgBody = socket_.recvString('\n');
-		disp.printHeader("\n Message recieved from Client Msg=" + MsgBody +"\n");
+		disp.printHeader("\n Message recieved from Client Msg=" + MsgBody + "\n");
 	}
 }
 
@@ -64,7 +64,7 @@ char* ClientHandler::socketBufferHandler(Socket& socket_)
 
 //--------------< Writes the file to destination directory >--------------------
 void ClientHandler::writeToFile(MessageId id, Message msg, char* byte){
-	
+
 	std::string path = msg.getHeader().getFileName();
 	std::string filename = Path::getName(path);
 
@@ -83,7 +83,8 @@ void ClientHandler::writeToFile(MessageId id, Message msg, char* byte){
 	if (ofstream.good()){
 		ofstream.write(byte, stoi(msg.getHeader().getBodylength()));
 		ofstream.close();
-	}else{
+	}
+	else{
 		disp.printHeader("\n Unable to Write File");
 	}
 }
@@ -116,7 +117,8 @@ void Receiver::connect(int port)
 	try{
 		Verbose v(true);
 		listener_.start(client_);
-	}catch (std::exception ex){
+	}
+	catch (std::exception ex){
 		Verbose::show(ex.what());
 	}
 }
@@ -136,9 +138,7 @@ size_t ClientHandler::stringToInt(std::string str)
 //----< Client Handler thread starts running this  >------------------------------------
 void ClientHandler::operator()(Socket& socket_)
 {
-	MessageId msgId;
-	while (true)
-	{
+	while (true){
 		if (socket_.bytesWaiting() == 0)
 			continue;
 		::Sleep(100);
@@ -149,7 +149,8 @@ void ClientHandler::operator()(Socket& socket_)
 		std::string cmd = msgHeader.getCommand();
 		Command cmd_val = Command::NONE;
 		if (cmd == "1" || cmd == "2" || cmd == "3" || cmd == "4" || cmd == "5" || cmd == "6")
-		 cmd_val = static_cast<Command>(atoi(cmd.c_str()));
+			cmd_val = static_cast<Command>(atoi(cmd.c_str()));
+		MessageId msgId;
 		msgId = getMessageIdentifier(messg);
 		if (UploadFile == cmd_val){
 			bufferSize_ = stringToInt(messg.getHeader().getBodylength());
@@ -159,11 +160,8 @@ void ClientHandler::operator()(Socket& socket_)
 			disp.printString("Writing to File : " + filename + " Received from " + messg.getHeader().getSrcPort());
 			writeToFile(msgId, messg, content);
 			continue;
-		}else if (FileEnded == cmd_val){
-			disp.printHeader(" File End Command recieved . Passing acknowledgement ");
-		}else if (MessageSend == cmd_val){
-			continue;
 		}
+		processCmd(messg,socket_,cmd_val);
 		if (socket_ == INVALID_SOCKET)
 			break;
 		processMessage(socket_, messg);
@@ -172,6 +170,13 @@ void ClientHandler::operator()(Socket& socket_)
 	socket_.shutDown();
 	socket_.close();
 	Verbose::show("ClientHandler thread terminating");
+}
+
+//-------< Process commands break >---------------------------------------
+void ClientHandler::processCmd(Message messg, Socket& socket_, Command cmd_val)
+{
+	if (FileEnded == cmd_val)
+		disp.printHeader(" File End Command recieved . Passing acknowledgement ");
 }
 
 #ifdef TEST_RECIEVER

@@ -60,16 +60,6 @@ void ExecutiveClient::stop(){
 
 
 #ifdef TEST_EXECLIENT
-struct Cosmetic
-{
-	~Cosmetic(){
-		Display display;
-		display.printString("\n Cosmetic press Enter to exit: ");
-		std::cin.get();
-		display.printString("\n \n");
-	}
-};
-
 //----< Calling Client Main >-------------------------------------------
 int main(int argc, char* argv[]){
 	try{

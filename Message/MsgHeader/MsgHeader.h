@@ -77,6 +77,7 @@ namespace MessagePassing
 		std::string MsgHeader::getDstPort2();                              // Setting Destination Port Second
 
 	private:
+		void setParametersHelper(std::string name, std::string value);     // setParameters Helper function
 		std::string toString(int i);                                       // To String Conversion 
 		int command_;
 		std::string srcIP;

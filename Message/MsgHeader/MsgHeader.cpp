@@ -43,31 +43,31 @@ void MsgHeader::setParameters(std::string name, std::string value){
 		if (value == "UploadFile")
 			command_ = Command::UploadFile;
 	}
-	else if (name.compare("SRCIP") == 0){
-		srcIP = value;
-	}
-	else if (name.compare("SRCPORT") == 0){
-		srcPort = value;
-	}
-	else if (name.compare("DSTIP") == 0){
-		dstIP = value;
-	}
-	else if (name.compare("DISPORT") == 0){
-		dstPort = value;
-	}
-	else if (name.compare("DISPORT2") == 0){
-		distPort2 = value;
-	}
-	else if (name.compare("FILENAME") == 0){
-		fileName = value;
-	}
 	else if (name.compare("FILETYPE") == 0){
 		FileType file_val = static_cast<FileType>(atoi(value.c_str()));
 		FileType_ = file_val;
 	}
-	else if (name.compare("BODYLENGTH") == 0){
+	else if (name.compare("BODYLENGTH") == 0)
 		bodyLength_ = value.c_str();
-	}
+
+	setParametersHelper(name, value);
+}
+
+//----< Setting Parameters Helper >------------------------------------------------
+void MsgHeader::setParametersHelper(std::string name, std::string value){
+		
+	if (name.compare("SRCIP") == 0)
+			srcIP = value;
+		else if (name.compare("SRCPORT") == 0)
+			srcPort = value;
+		else if (name.compare("DSTIP") == 0)
+			dstIP = value;
+		else if (name.compare("DISPORT") == 0)
+			dstPort = value;
+		else if (name.compare("DISPORT2") == 0)
+			distPort2 = value;
+		else if (name.compare("FILENAME") == 0)
+			fileName = value;
 }
 
 //----< Setting Command >------------------------------------------------

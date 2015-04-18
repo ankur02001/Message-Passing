@@ -47,17 +47,6 @@ MessagePassing::ExecutiveServer::~ExecutiveServer(){
 }
 
 #ifdef TEST_EXECSERVER
-//----< Cosmetic  function >--------------------------------------------------------
-struct Cosmetic
-{
-	~Cosmetic(){
-		MessagePassing::Display display;
-		display.printString("\n Cosmetic press Enter to exit: ");
-		std::cin.get();
-		display.printString("\n \n");
-	}
-};
-
 //----< Calling Client Main >-------------------------------------------------------
 int main(int argc, char* argv[]){
 	try{

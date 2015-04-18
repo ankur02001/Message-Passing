@@ -19,19 +19,20 @@ bool Sender::sendString(Message msg){
 	std::string cmd = hdr.getCommand();
 	Command cmd_val = Command::NONE;
 	if (cmd == "1" || cmd == "2" || cmd == "3" || cmd == "4" || cmd == "5" || cmd == "6")
-	      cmd_val = static_cast<Command>(atoi(cmd.c_str()));
+		cmd_val = static_cast<Command>(atoi(cmd.c_str()));
 	if (MessageSend == cmd_val){
-		if (!SocketCon_->sendString(msg.constructHeader(),'\n')){
+		if (!SocketCon_->sendString(msg.constructHeader(), '\n')){
 			disp.printHeader("Thread Stopped. Not able to send Data");
 			return false;
 		}
 		std::string message = msg.getMessage();
-		if (!SocketCon_->sendString(msg.getMessage(),'\n')){
+		if (!SocketCon_->sendString(msg.getMessage(), '\n')){
 			disp.printHeader("Thread Stopped. Not able to send Data");
 			return false;
 		}
-	}else if (UploadFile == cmd_val){
-		if (!SocketCon_->sendString(msg.constructHeader(),'\n')){
+	}
+	else if (UploadFile == cmd_val){
+		if (!SocketCon_->sendString(msg.constructHeader(), '\n')){
 			disp.printHeader("Thread Stopped. Not able to send Data");
 			return false;
 		}
@@ -89,7 +90,7 @@ void Sender::start()
 //-------< Checking acknowledgement recieved >---------------------------------
 bool Sender::acknowledgementCheck(Message& msg)
 {
-	
+
 	disp.printHeader("Ended sending of file: " + Path::getName(msg.getHeader().getFileName()) + "");
 	msg.getHeader().setCommand(StopSending);
 	while (true)
@@ -134,16 +135,13 @@ void Sender::run(){
 			std::string cmd = hdr.getCommand();
 			Command cmd_val = Command::NONE;
 			if (cmd == "1" || cmd == "2" || cmd == "3" || cmd == "4" || cmd == "5" || cmd == "6")
-			     cmd_val = static_cast<Command>(atoi(cmd.c_str()));
+				cmd_val = static_cast<Command>(atoi(cmd.c_str()));
 			if (UploadFile == cmd_val){
 				if (!sendBlock(msg))
 					continue;
 			}
-			else if (MessageSend == cmd_val){
-				if (!sendString(msg))
-					continue;
-			}	if (StopSending == cmd_val){
-				disp.printHeader("Stopping Sender");
+			else if (StopSending == cmd_val){
+				disp.printHeader(" Stopping Sender ");
 				break;
 			}
 			::Sleep(100);
@@ -156,7 +154,6 @@ void Sender::run(){
 
 //-------< Sends blocks of file to the socket >---------------------------------------
 bool Sender::sendBlock(Message msg){
-
 	disp.printHeader("Started Sending File: " + msg.getHeader().getFileName() + " to Destination IP : " +
 		msg.getHeader().getDstIP() + " And port :" + msg.getHeader().getDstPort());
 	MsgHeader hdr = msg.getHeader();
@@ -167,11 +164,8 @@ bool Sender::sendBlock(Message msg){
 	std::ifstream ifstream(path.c_str(), std::ios::in | std::ios::binary);
 	ifstream.seekg(0, std::ios::beg);
 	size_t end_byte = 0;
-
-	if (ifstream.is_open())
-	{
-		while (ifstream.good() && !ifstream.eof())
-		{
+	if (ifstream.is_open()){
+		while (ifstream.good() && !ifstream.eof()){
 			char *block = new char[1024];
 			size_t i = 0;
 			for (i = 0; i <= 1024; i++)
@@ -197,18 +191,15 @@ bool Sender::sendBlock(Message msg){
 		}
 	}
 	else disp.printHeader("Unable to open file");
-	::Sleep(100);
-	::Sleep(100);
+	::Sleep(100); ::Sleep(100);
 	msg.getHeader().setCommand(FileEnded);
 	std::ostringstream convert;   // stream used for the conversion
 	convert << end_byte;
 	msg.getHeader().setBodylength(convert.str());
-	if (!SocketCon_->sendString(msg.constructHeader(),'\n')){
+	if (!SocketCon_->sendString(msg.constructHeader(), '\n'))
 		return false;
-	}
 	::Sleep(100);
-	bool wait = acknowledgementCheck(msg);
-	return wait;
+	return acknowledgementCheck(msg);
 }
 
 #ifdef TEST_SENDER

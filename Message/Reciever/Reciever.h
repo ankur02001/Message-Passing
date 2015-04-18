@@ -90,12 +90,13 @@ namespace MessagePassing
 		MessageId getMessageIdentifier(Message&);                               // Generate Identifier of file
 
 	private:
-		Display disp;
+		void processCmd(Message messg, Socket& socket_, Command cmd_val);       // Process command 
 		std::string filePath;
 		BlockingQueue<Message>& bq_;
 		Dispatcher& dispatcher_;
 		std::map<MessageId, std::vector<char*>> messageMap_;
 		size_t bufferSize_;
+		Display disp;
 	};
 
 	///////////////////////////////////////////////////
